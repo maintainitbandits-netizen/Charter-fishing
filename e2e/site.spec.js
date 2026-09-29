@@ -28,9 +28,25 @@ test('mobile menu, image and no horizontal overflow',async({page})=>{
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
  await page.getByRole('button',{name:'Toggle menu'}).click();
  await page.getByRole('navigation').getByRole('link',{name:'Our charters'}).click();
+ await expect(page).toHaveURL(/\/charters$/);
  await expect(page.getByRole('button',{name:'Toggle menu'})).toHaveAttribute('aria-expanded','false');
  await page.getByRole('button',{name:'Request this trip'}).first().click();
  await expect(page.getByRole('dialog')).toBeVisible();
  await page.getByRole('button',{name:'Close trip request'}).click();
  await page.screenshot({path:'test-results/mobile.png',fullPage:true});
+});
+
+test('page navigation and blog',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/');
+ await page.getByRole('navigation').getByRole('link',{name:'Blog'}).click();
+ await expect(page).toHaveURL(/\/blog$/);
+ await expect(page.getByRole('heading',{name:/Welcome aboard/})).toBeVisible();
+ await page.getByRole('link',{name:'Read the full story'}).first().click();
+ await expect(page).toHaveURL(/\/blog\/welcome-aboard-knotty-sea$/);
+ await expect(page.getByRole('link',{name:'All posts'})).toBeVisible();
+ await page.getByRole('navigation').getByRole('link',{name:'FAQs'}).click();
+ await expect(page).toHaveURL(/\/faqs$/);
+ await expect(page.getByText('Is this a private charter?',{exact:true})).toBeVisible();
+ expect(errors).toEqual([]);
 });
