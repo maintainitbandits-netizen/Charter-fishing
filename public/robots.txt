@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://charterfoshing.vercel.app/sitemap.xml
